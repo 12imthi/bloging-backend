@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loginUser = exports.registerUser = void 0;
+exports.deleteUsers = exports.getAllUsers = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
 
 var _userSchema = _interopRequireDefault(require("../Models/userSchema.js"));
 
@@ -186,3 +186,101 @@ var loginUser = function loginUser(req, res) {
 };
 
 exports.loginUser = loginUser;
+
+var logoutUser = function logoutUser(req, res) {
+  try {
+    res.clearCookie('token');
+    res.status(200).json({
+      message: 'logout is successfully'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "logout is failed"
+    });
+  }
+};
+
+exports.logoutUser = logoutUser;
+
+var getAllUsers = function getAllUsers(req, res) {
+  var users;
+  return regeneratorRuntime.async(function getAllUsers$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.prev = 0;
+          _context3.next = 3;
+          return regeneratorRuntime.awrap(_userSchema["default"].find({}, 'id email role'));
+
+        case 3:
+          users = _context3.sent;
+          res.status(200).json({
+            message: "get users successfully ",
+            users: users
+          });
+          _context3.next = 11;
+          break;
+
+        case 7:
+          _context3.prev = 7;
+          _context3.t0 = _context3["catch"](0);
+          console.log(_context3.t0);
+          res.status(500).json({
+            message: "failed to fetch users"
+          });
+
+        case 11:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+};
+
+exports.getAllUsers = getAllUsers;
+
+var deleteUsers = function deleteUsers(req, res) {
+  var id, user;
+  return regeneratorRuntime.async(function deleteUsers$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.prev = 0;
+          id = req.params.id;
+          _context4.next = 4;
+          return regeneratorRuntime.awrap(_userSchema["default"].findByIdAndDelete(id));
+
+        case 4:
+          user = _context4.sent;
+
+          if (user) {
+            _context4.next = 7;
+            break;
+          }
+
+          return _context4.abrupt("return", res.status(404).json({
+            message: "User deleted successfully"
+          }));
+
+        case 7:
+          _context4.next = 13;
+          break;
+
+        case 9:
+          _context4.prev = 9;
+          _context4.t0 = _context4["catch"](0);
+          console.log(_context4.t0);
+          res.status(500).json({
+            message: "Erorr from delete user"
+          });
+
+        case 13:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  }, null, null, [[0, 9]]);
+};
+
+exports.deleteUsers = deleteUsers;

@@ -16,5 +16,8 @@ var router = _express["default"].Router();
 
 router.post('/register', _UserController.registerUser);
 router.post('/login', _UserController.loginUser);
+router.post('/logout', _UserController.logoutUser);
+router.get('/users', _UserController.getAllUsers);
+router["delete"]('/users/:id', _UserController.deleteUsers);
 var _default = router;
 exports["default"] = _default;

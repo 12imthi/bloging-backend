@@ -81,3 +81,47 @@ export const loginUser = async (req, res) => {
     }
 };
 
+
+export const logoutUser = (req,res) => {
+    
+    try {
+
+        res.clearCookie('token')
+        res.status(200).json({message: 'logout is successfully'})
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "logout is failed"})
+    }
+
+
+}
+
+export const getAllUsers = async(req,res) => {
+    
+    try {
+        const users = await User.find({},'id email role')
+        res.status(200).json({message: "get users successfully ",users: users})
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "failed to fetch users"})
+    }
+}
+
+export const deleteUsers = async(req,res) => {
+    
+    try {
+       const {id} = req.params;
+       const user = await User.findByIdAndDelete(id);
+
+       if(!user) {
+        return res.status(404).json({message: "User deleted successfully"})
+       }
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Erorr from delete user"})
+    }
+}
+
