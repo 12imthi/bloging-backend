@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+    title: { type: String, unique: true } ,
     createdAt: {
         type: Date,
         default: Date.now,
