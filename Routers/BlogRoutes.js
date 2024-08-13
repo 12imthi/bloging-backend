@@ -1,5 +1,5 @@
 import express from "express"
-import { createBlog, deletePost, getBlogs, getById, updatePostById } from "../Controllers/BlogController.js";
+import { createBlog, deletePost, getBlogs, getById, relatedPost, updatePostById } from "../Controllers/BlogController.js";
 
 
 
@@ -15,6 +15,8 @@ router.get('/:id',getById)
 router.patch('/update-post/:id',updatePostById)
 
 router.delete('/delete-post/:id',deletePost)
+
+router.get('/related/:id',relatedPost)
 
 
 

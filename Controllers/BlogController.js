@@ -1,5 +1,6 @@
-import { trusted } from "mongoose";
+import mongoose from "mongoose";
 import Blog from "../Models/blogSchema.js";
+import Comment from "../Models/commentSchema.js";
 
 export const createBlog = async (req, res) => {
   try {
@@ -16,118 +17,143 @@ export const createBlog = async (req, res) => {
   }
 };
 
-export const getBlogs = async(req,res) => {
+export const getBlogs = async (req, res) => {
+  try {
+    const { search, category, location } = req.query;
+    console.log(search);
 
-    try {
+    let query = {};
 
-        const {search,category,location} = req.query;
-        console.log(search);
-
-        let query = {}
-
-        if(search) {
-            query = {
-                ...query,
-                $or : [
-                    {title: {$regex: search, $options: "i"}},
-                    {content: {$regex: search, $options: "i"}}
-                ]
-            }
-        }
-
-        if(category) {
-            query = {
-                ...query,
-                category
-            }
-        }
-        if(location) {
-            query = {
-                ...query,
-                location
-            }
-        }
-
-        const getBlogs = await Blog.find(query).sort({createdAt : -1});
-
-        res.status(201).json({
-            message:"All postes retervie successfully",
-            data:getBlogs
-        })
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error getBlogs post" });
-    }
-}
-
-
-export const getById = async(req,res) => {
- 
-    try {
-        // console.log(req.params.id);
-
-        const postId = req.params.id;
-        const post = await Blog.findById(postId);
-        if(!post) {
-            return res.status(404).json({message: "Post not found"})
-        }
-
-        // Todo : with also fetch comment realatd to the post
-        res.status(202).json({message: "Post retrieved successfully",data:post})
-
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error fetching singel  post" });
+    if (search) {
+      query = {
+        ...query,
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { content: { $regex: search, $options: "i" } },
+        ],
+      };
     }
 
-}
+    if (category) {
+      query = {
+        ...query,
+        category,
+      };
+    }
+    if (location) {
+      query = {
+        ...query,
+        location,
+      };
+    }
 
-export const updatePostById = async(req,res) => {
- try {
+    const getBlogs = await Blog.find(query).sort({ createdAt: -1 });
+
+    res.status(201).json({
+      message: "All postes retervie successfully",
+      data: getBlogs,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error getBlogs post" });
+  }
+};
+
+export const getById = async (req, res) => {
+  try {
+    // console.log(req.params.id);
 
     const postId = req.params.id;
-    const updatedPost  = await Blog.findByIdAndUpdate(postId,{
-        ...req.body
-    },{new : true});
-
-    if(!updatedPost) {
-        return res.status(404).json({message : "post not found"})
+    const post = await Blog.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-    res.status(202).json({message: "updated post successfully",data:updatedPost})
 
+const comment = await Comment.find({postId : postId}).populate('user',"username email")
 
- }
- catch (error) {
+    res
+      .status(202)
+      .json({ message: "Post retrieved successfully", data: post });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching singel  post" });
+  }
+};
+
+export const updatePostById = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const updatedPost = await Blog.findByIdAndUpdate(
+      postId,
+      {
+        ...req.body,
+      },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "post not found" });
+    }
+    res
+      .status(202)
+      .json({ message: "updated post successfully", data: updatedPost });
+  } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error updated  post" });
-}
-}
+  }
+};
 
-export const deletePost = async(req,res) => {
-    try {
-
-        const postId = req.params.id;
-        const deletePost = await Blog.findByIdAndDelete(postId)
-        if(!deletePost) {
-            return res.status(404).json({message : "post not found"})
-        }
-        res.status(202).json({message: "Deleted post successfully",data:deletePost})
-
+export const deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const deletePost = await Blog.findByIdAndDelete(postId);
+    if (!deletePost) {
+      return res.status(404).json({ message: "post not found" });
     }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error deleted  post" });
-    }
-}
 
-export const relatedPost = async(req,res) => {
+    // delete related comments
 
-    try {
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error RelatedPost  post" });
+await Comment.deleteMany({postId : postId})
+
+    res
+      .status(202)
+      .json({ message: "Deleted post successfully", data: deletePost });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error deleted  post" });
+  }
+};
+
+export const relatedPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).json({
+        message: "Post Id is required",
+      });
     }
-}
+    const blog = await Blog.findById(id)
+
+    if (!blog) {
+        return res.status(404).json({
+          message: "Post is not found ",
+        });
+      }
+
+      const titelRegex = new RegExp(blog.title.split(' ').join('|'),'i')
+
+      const relatedQuery = {
+        _id: {$ne: id} ,// exclude the current blog by id
+        title: {$regex : titelRegex}
+      }
+
+      const relatedPost =  await Blog.find(relatedQuery)
+
+      res.status(202).json({message: "Related post found ",post: relatedPost})
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error RelatedPost  post" });
+  }
+};

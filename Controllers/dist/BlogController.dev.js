@@ -5,9 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.relatedPost = exports.deletePost = exports.updatePostById = exports.getById = exports.getBlogs = exports.createBlog = void 0;
 
-var _mongoose = require("mongoose");
+var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _blogSchema = _interopRequireDefault(require("../Models/blogSchema.js"));
+
+var _commentSchema = _interopRequireDefault(require("../Models/commentSchema.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -128,7 +130,7 @@ var getBlogs = function getBlogs(req, res) {
 exports.getBlogs = getBlogs;
 
 var getById = function getById(req, res) {
-  var postId, post;
+  var postId, post, comment;
   return regeneratorRuntime.async(function getById$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -152,28 +154,34 @@ var getById = function getById(req, res) {
           }));
 
         case 7:
-          // Todo : with also fetch comment realatd to the post
+          _context3.next = 9;
+          return regeneratorRuntime.awrap(_commentSchema["default"].find({
+            postId: postId
+          }).populate('user', "username email"));
+
+        case 9:
+          comment = _context3.sent;
           res.status(202).json({
             message: "Post retrieved successfully",
             data: post
           });
-          _context3.next = 14;
+          _context3.next = 17;
           break;
 
-        case 10:
-          _context3.prev = 10;
+        case 13:
+          _context3.prev = 13;
           _context3.t0 = _context3["catch"](0);
           console.log(_context3.t0);
           res.status(500).json({
             message: "Error fetching singel  post"
           });
 
-        case 14:
+        case 17:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[0, 10]]);
+  }, null, null, [[0, 13]]);
 };
 
 exports.getById = getById;
@@ -280,23 +288,77 @@ var deletePost = function deletePost(req, res) {
 exports.deletePost = deletePost;
 
 var relatedPost = function relatedPost(req, res) {
+  var id, blog, titelRegex, relatedQuery, _relatedPost;
+
   return regeneratorRuntime.async(function relatedPost$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
-          try {} catch (error) {
-            console.log(error);
-            res.status(500).json({
-              message: "Error RelatedPost  post"
-            });
+          _context6.prev = 0;
+          id = req.params.id;
+
+          if (id) {
+            _context6.next = 4;
+            break;
           }
 
-        case 1:
+          return _context6.abrupt("return", res.status(404).json({
+            message: "Post Id is required"
+          }));
+
+        case 4:
+          _context6.next = 6;
+          return regeneratorRuntime.awrap(_blogSchema["default"].findById(id));
+
+        case 6:
+          blog = _context6.sent;
+
+          if (blog) {
+            _context6.next = 9;
+            break;
+          }
+
+          return _context6.abrupt("return", res.status(404).json({
+            message: "Post is not found "
+          }));
+
+        case 9:
+          titelRegex = new RegExp(blog.title.split(' ').join('|'), 'i');
+          relatedQuery = {
+            _id: {
+              $ne: id
+            },
+            // exclude the current blog by id
+            title: {
+              $regex: titelRegex
+            }
+          };
+          _context6.next = 13;
+          return regeneratorRuntime.awrap(_blogSchema["default"].find(relatedQuery));
+
+        case 13:
+          _relatedPost = _context6.sent;
+          res.status(202).json({
+            message: "Related post found ",
+            post: _relatedPost
+          });
+          _context6.next = 21;
+          break;
+
+        case 17:
+          _context6.prev = 17;
+          _context6.t0 = _context6["catch"](0);
+          console.log(_context6.t0);
+          res.status(500).json({
+            message: "Error RelatedPost  post"
+          });
+
+        case 21:
         case "end":
           return _context6.stop();
       }
     }
-  });
+  }, null, null, [[0, 17]]);
 };
 
 exports.relatedPost = relatedPost;
