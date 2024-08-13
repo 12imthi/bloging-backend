@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./Database/config.js";
 import blogsRouter from "./Routers/BlogRoutes.js"
 import commentsRouter from "./Routers/CommentsRouter.js"
+import userRouter from "./Routers/authUserRoutes.js"
 
 
 dotenv.config();
@@ -28,6 +29,7 @@ const PORT = 5000 || process.env.PORT;
 //   res.status(200).send("app is running");
 // });
 
+app.use("/api/auth",userRouter)
 app.use("/api/blogs",blogsRouter)
 app.use("/api/comments",commentsRouter)
 
