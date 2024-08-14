@@ -125,3 +125,25 @@ export const deleteUsers = async(req,res) => {
     }
 }
 
+export const updateUserByRole = async(req,res) => {
+    try {
+
+        const {id} = req.params;
+        const {role} = req.body;
+
+
+        const user = await User.findByIdAndUpdate(id, {role}, {new:true})
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." }); 
+        }
+
+        res.status(200).json({message: 'user role updated successfully',user})
+
+
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Erorr from updateUserByRole"})
+    }
+}

@@ -1,7 +1,6 @@
 import express from "express"
-import { getAllUsers, loginUser, logoutUser, registerUser } from "../Controllers/UserController.js";
-// import { authenticateToken } from '../Middleware/authenticateToken.js';
-import { deleteUsers } from '../Controllers/UserController.js';
+import { getAllUsers, loginUser, logoutUser, registerUser,deleteUsers,updateUserByRole } from "../Controllers/UserController.js";
+
 
 
 
@@ -15,5 +14,6 @@ router.post('/login',loginUser)
 router.post('/logout',logoutUser)
 router.get('/users',getAllUsers)
 router.delete('/users/:id',deleteUsers)
+router.put('/users/:id',updateUserByRole)
 
 export default router;

@@ -27,7 +27,10 @@ var createBlog = function createBlog(req, res) {
         case 0:
           _context.prev = 0;
           // console.log("blogs start : ",req.body);
-          newPost = new _blogSchema["default"](_objectSpread({}, req.body));
+          newPost = new _blogSchema["default"](_objectSpread({}, req.body, {
+            author: req.userId
+          })); // use author: req.userId, when you have token 
+
           _context.next = 4;
           return regeneratorRuntime.awrap(newPost.save());
 
@@ -98,7 +101,7 @@ var getBlogs = function getBlogs(req, res) {
           }
 
           _context2.next = 9;
-          return regeneratorRuntime.awrap(_blogSchema["default"].find(query).sort({
+          return regeneratorRuntime.awrap(_blogSchema["default"].find(query).populate('author', 'email').sort({
             createdAt: -1
           }));
 
@@ -262,27 +265,33 @@ var deletePost = function deletePost(req, res) {
           }));
 
         case 7:
+          _context5.next = 9;
+          return regeneratorRuntime.awrap(_commentSchema["default"].deleteMany({
+            postId: postId
+          }));
+
+        case 9:
           res.status(202).json({
             message: "Deleted post successfully",
             data: _deletePost
           });
-          _context5.next = 14;
+          _context5.next = 16;
           break;
 
-        case 10:
-          _context5.prev = 10;
+        case 12:
+          _context5.prev = 12;
           _context5.t0 = _context5["catch"](0);
           console.log(_context5.t0);
           res.status(500).json({
             message: "Error deleted  post"
           });
 
-        case 14:
+        case 16:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 10]]);
+  }, null, null, [[0, 12]]);
 };
 
 exports.deletePost = deletePost;

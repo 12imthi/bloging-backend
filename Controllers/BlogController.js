@@ -5,7 +5,7 @@ import Comment from "../Models/commentSchema.js";
 export const createBlog = async (req, res) => {
   try {
     // console.log("blogs start : ",req.body);
-    const newPost = new Blog({ ...req.body });
+    const newPost = new Blog({ ...req.body ,author: req.userId}); // use author: req.userId, when you have token 
     await newPost.save();
     res.status(201).json({
       message: "post created successfully",
@@ -47,7 +47,7 @@ export const getBlogs = async (req, res) => {
       };
     }
 
-    const getBlogs = await Blog.find(query).sort({ createdAt: -1 });
+    const getBlogs = await Blog.find(query).populate('author','email').sort({ createdAt: -1 });
 
     res.status(201).json({
       message: "All postes retervie successfully",

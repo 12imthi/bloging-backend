@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.deleteUsers = exports.getAllUsers = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
+exports.updateUserByRole = exports.deleteUsers = exports.getAllUsers = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
 
 var _userSchema = _interopRequireDefault(require("../Models/userSchema.js"));
 
@@ -284,3 +284,57 @@ var deleteUsers = function deleteUsers(req, res) {
 };
 
 exports.deleteUsers = deleteUsers;
+
+var updateUserByRole = function updateUserByRole(req, res) {
+  var id, role, user;
+  return regeneratorRuntime.async(function updateUserByRole$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          id = req.params.id;
+          role = req.body.role;
+          _context5.next = 5;
+          return regeneratorRuntime.awrap(_userSchema["default"].findByIdAndUpdate(id, {
+            role: role
+          }, {
+            "new": true
+          }));
+
+        case 5:
+          user = _context5.sent;
+
+          if (user) {
+            _context5.next = 8;
+            break;
+          }
+
+          return _context5.abrupt("return", res.status(404).json({
+            message: "User not found."
+          }));
+
+        case 8:
+          res.status(200).json({
+            message: 'user role updated successfully',
+            user: user
+          });
+          _context5.next = 15;
+          break;
+
+        case 11:
+          _context5.prev = 11;
+          _context5.t0 = _context5["catch"](0);
+          console.log(_context5.t0);
+          res.status(500).json({
+            message: "Erorr from updateUserByRole"
+          });
+
+        case 15:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, null, null, [[0, 11]]);
+};
+
+exports.updateUserByRole = updateUserByRole;

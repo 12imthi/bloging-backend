@@ -26,10 +26,10 @@ app.use((0, _cors["default"])({
 }));
 app.use(_express["default"].json());
 (0, _config["default"])();
-var PORT = 5000 || process.env.PORT; // app.get("/", (req, res) => {
-//   res.status(200).send("app is running");
-// });
-
+var PORT = 5000 || process.env.PORT;
+app.get("/", function (req, res) {
+  res.status(200).send("app is running");
+});
 app.use("/api/auth", _authUserRoutes["default"]);
 app.use("/api/blogs", _BlogRoutes["default"]);
 app.use("/api/comments", _CommentsRouter["default"]);

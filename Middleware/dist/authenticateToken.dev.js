@@ -54,22 +54,22 @@ var generateToken = function generateToken(userId) {
             role: user.role
           }, JWT_SECRET, {
             expiresIn: '1h'
-          });
-          console.log("Token generated:", token);
+          }); // console.log("Token generated:", token);
+
           return _context.abrupt("return", token);
 
-        case 14:
-          _context.prev = 14;
+        case 13:
+          _context.prev = 13;
           _context.t0 = _context["catch"](2);
           console.error("Error generating token:", _context.t0);
           throw _context.t0;
 
-        case 18:
+        case 17:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[2, 14]]);
+  }, null, null, [[2, 13]]);
 };
 
 var _default = generateToken;

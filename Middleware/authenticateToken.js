@@ -27,7 +27,7 @@ const generateToken = async (userId) => {
             { expiresIn: '1h' }
         );
 
-        console.log("Token generated:", token);
+        // console.log("Token generated:", token);
         return token;
 
     } catch (error) {

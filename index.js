@@ -25,9 +25,9 @@ const PORT = 5000 || process.env.PORT;
 
 
 
-// app.get("/", (req, res) => {
-//   res.status(200).send("app is running");
-// });
+app.get("/", (req, res) => {
+  res.status(200).send("app is running");
+});
 
 app.use("/api/auth",userRouter)
 app.use("/api/blogs",blogsRouter)
