@@ -5,11 +5,18 @@ import connectDB from "./Database/config.js";
 import blogsRouter from "./Routers/BlogRoutes.js"
 import commentsRouter from "./Routers/CommentsRouter.js"
 import userRouter from "./Routers/authUserRoutes.js"
+import cookieParser from "cookie-parser";
+import bodyParser from 'body-parser';
+
 
 
 dotenv.config();
 
 const app = express();
+
+app.use(cookieParser())
+app.use(bodyParser.json({limit: '10mb'}))
+app.use(bodyParser.urlencoded({limit: '10mb',extended: true}))
 app.use(
   cors({
     origin: "http://localhost:5173",

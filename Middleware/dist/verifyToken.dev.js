@@ -18,7 +18,7 @@ var JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 var verifyToken = function verifyToken(req, res, next) {
   try {
-    // const token = req.headers['authorization']
+    // const token = req.headers.authorization?.split(' ')[1]
     var token = req.cookies.token;
 
     if (!token) {

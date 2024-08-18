@@ -14,11 +14,23 @@ var _CommentsRouter = _interopRequireDefault(require("./Routers/CommentsRouter.j
 
 var _authUserRoutes = _interopRequireDefault(require("./Routers/authUserRoutes.js"));
 
+var _cookieParser = _interopRequireDefault(require("cookie-parser"));
+
+var _bodyParser = _interopRequireDefault(require("body-parser"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 _dotenv["default"].config();
 
 var app = (0, _express["default"])();
+app.use((0, _cookieParser["default"])());
+app.use(_bodyParser["default"].json({
+  limit: '10mb'
+}));
+app.use(_bodyParser["default"].urlencoded({
+  limit: '10mb',
+  extended: true
+}));
 app.use((0, _cors["default"])({
   origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
