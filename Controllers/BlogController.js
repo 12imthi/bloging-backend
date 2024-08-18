@@ -20,44 +20,39 @@ export const createBlog = async (req, res) => {
 export const getBlogs = async (req, res) => {
   try {
     const { search, category, location } = req.query;
-    console.log(search);
 
     let query = {};
 
+    // Search by title or content using regex
     if (search) {
-      query = {
-        ...query,
-        $or: [
-          { title: { $regex: search, $options: "i" } },
-          { content: { $regex: search, $options: "i" } },
-        ],
-      };
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+      ];
     }
 
+    // Match exact category (can be changed to regex for partial match)
     if (category) {
-      query = {
-        ...query,
-        category,
-      };
+      query.category = { $regex: category, $options: "i" };
     }
+
+    // Match exact location (can be changed to regex for partial match)
     if (location) {
-      query = {
-        ...query,
-        location,
-      };
+      query.location = { $regex: location, $options: "i" };
     }
 
-    const getBlogs = await Blog.find(query).populate('author','email').sort({ createdAt: -1 });
+    const blogs = await Blog.find(query).populate('author', 'email').sort({ createdAt: -1 });
 
-    res.status(201).json({
-      message: "All postes retervie successfully",
-      blogs: getBlogs,
+    res.status(200).json({
+      message: "All posts retrieved successfully",
+      blogs,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Error getBlogs post" });
+    console.error("Error fetching blogs:", error);
+    res.status(500).json({ message: "Error fetching blogs" });
   }
 };
+
 
 export const getById = async (req, res) => {
   try {

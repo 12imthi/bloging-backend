@@ -13,9 +13,9 @@ router.get('/',getBlogs)
 
 router.get('/:id', getById)
 
-router.patch('/update-post/:id',verifyToken,updatePostById)
+router.patch('/update-post/:id',verifyToken,isAdmin,updatePostById)
 
-router.delete('/delete-post/:id',verifyToken,deletePost)
+router.delete('/delete-post/:id',verifyToken,isAdmin,deletePost)
 
 router.get('/related/:id',relatedPost)
 

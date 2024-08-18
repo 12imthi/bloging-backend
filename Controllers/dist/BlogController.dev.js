@@ -61,7 +61,7 @@ var createBlog = function createBlog(req, res) {
 exports.createBlog = createBlog;
 
 var getBlogs = function getBlogs(req, res) {
-  var _req$query, search, category, location, query, _getBlogs;
+  var _req$query, search, category, location, query, blogs;
 
   return regeneratorRuntime.async(function getBlogs$(_context2) {
     while (1) {
@@ -69,65 +69,66 @@ var getBlogs = function getBlogs(req, res) {
         case 0:
           _context2.prev = 0;
           _req$query = req.query, search = _req$query.search, category = _req$query.category, location = _req$query.location;
-          console.log(search);
-          query = {};
+          query = {}; // Search by title or content using regex
 
           if (search) {
-            query = _objectSpread({}, query, {
-              $or: [{
-                title: {
-                  $regex: search,
-                  $options: "i"
-                }
-              }, {
-                content: {
-                  $regex: search,
-                  $options: "i"
-                }
-              }]
-            });
-          }
+            query.$or = [{
+              title: {
+                $regex: search,
+                $options: "i"
+              }
+            }, {
+              content: {
+                $regex: search,
+                $options: "i"
+              }
+            }];
+          } // Match exact category (can be changed to regex for partial match)
+
 
           if (category) {
-            query = _objectSpread({}, query, {
-              category: category
-            });
-          }
+            query.category = {
+              $regex: category,
+              $options: "i"
+            };
+          } // Match exact location (can be changed to regex for partial match)
+
 
           if (location) {
-            query = _objectSpread({}, query, {
-              location: location
-            });
+            query.location = {
+              $regex: location,
+              $options: "i"
+            };
           }
 
-          _context2.next = 9;
+          _context2.next = 8;
           return regeneratorRuntime.awrap(_blogSchema["default"].find(query).populate('author', 'email').sort({
             createdAt: -1
           }));
 
-        case 9:
-          _getBlogs = _context2.sent;
-          res.status(201).json({
-            message: "All postes retervie successfully",
-            blogs: _getBlogs
+        case 8:
+          blogs = _context2.sent;
+          res.status(200).json({
+            message: "All posts retrieved successfully",
+            blogs: blogs
           });
-          _context2.next = 17;
+          _context2.next = 16;
           break;
 
-        case 13:
-          _context2.prev = 13;
+        case 12:
+          _context2.prev = 12;
           _context2.t0 = _context2["catch"](0);
-          console.log(_context2.t0);
+          console.error("Error fetching blogs:", _context2.t0);
           res.status(500).json({
-            message: "Error getBlogs post"
+            message: "Error fetching blogs"
           });
 
-        case 17:
+        case 16:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[0, 13]]);
+  }, null, null, [[0, 12]]);
 };
 
 exports.getBlogs = getBlogs;

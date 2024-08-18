@@ -17,7 +17,7 @@ var CommentSchema = new _mongoose["default"].Schema({
   },
   user: {
     type: _mongoose["default"].Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
     required: true
   },
   // user : String,
