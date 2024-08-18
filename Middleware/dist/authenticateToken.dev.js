@@ -33,7 +33,8 @@ var generateToken = function generateToken(userId) {
 
         case 2:
           _context.prev = 2;
-          console.log("Searching for user with ID:", userId);
+          console.log("Searching for user with ID:", userId); // Log user ID for debugging
+
           _context.next = 6;
           return regeneratorRuntime.awrap(_userSchema["default"].findById(userId));
 
@@ -54,7 +55,9 @@ var generateToken = function generateToken(userId) {
             role: user.role
           }, JWT_SECRET, {
             expiresIn: '1h'
-          }); // console.log("Token generated:", token);
+          } // Adjust expiration time as needed
+          ); // Optionally log the generated token for debugging (commented out for security reasons)
+          // console.log("Token generated:", token);
 
           return _context.abrupt("return", token);
 

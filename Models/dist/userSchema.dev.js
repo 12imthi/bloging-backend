@@ -34,7 +34,7 @@ var userSchema = new _mongoose["default"].Schema({
   }
 });
 
-var User = _mongoose["default"].model("User", userSchema);
+var User = _mongoose["default"].model("user", userSchema);
 
 var _default = User;
 exports["default"] = _default;

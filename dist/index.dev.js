@@ -20,7 +20,7 @@ _dotenv["default"].config();
 
 var app = (0, _express["default"])();
 app.use((0, _cors["default"])({
-  origin: "*",
+  origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));

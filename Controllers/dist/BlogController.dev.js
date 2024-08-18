@@ -109,7 +109,7 @@ var getBlogs = function getBlogs(req, res) {
           _getBlogs = _context2.sent;
           res.status(201).json({
             message: "All postes retervie successfully",
-            data: _getBlogs
+            blogs: _getBlogs
           });
           _context2.next = 17;
           break;
@@ -133,7 +133,7 @@ var getBlogs = function getBlogs(req, res) {
 exports.getBlogs = getBlogs;
 
 var getById = function getById(req, res) {
-  var postId, post, comment;
+  var postId, post, comments;
   return regeneratorRuntime.async(function getById$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -163,10 +163,10 @@ var getById = function getById(req, res) {
           }).populate('user', "username email"));
 
         case 9:
-          comment = _context3.sent;
-          res.status(202).json({
-            message: "Post retrieved successfully",
-            data: post
+          comments = _context3.sent;
+          res.status(202).send({
+            post: post,
+            comments: comments
           });
           _context3.next = 17;
           break;
@@ -347,10 +347,7 @@ var relatedPost = function relatedPost(req, res) {
 
         case 13:
           _relatedPost = _context6.sent;
-          res.status(202).json({
-            message: "Related post found ",
-            post: _relatedPost
-          });
+          res.status(202).send(_relatedPost);
           _context6.next = 21;
           break;
 

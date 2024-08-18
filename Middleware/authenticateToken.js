@@ -13,7 +13,7 @@ const generateToken = async (userId) => {
     }
 
     try {
-        console.log("Searching for user with ID:", userId);
+        console.log("Searching for user with ID:", userId); // Log user ID for debugging
         const user = await User.findById(userId);
 
         if (!user) {
@@ -24,10 +24,12 @@ const generateToken = async (userId) => {
         const token = jwt.sign(
             { userId: user._id, role: user.role },
             JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '1h' } // Adjust expiration time as needed
         );
 
+        // Optionally log the generated token for debugging (commented out for security reasons)
         // console.log("Token generated:", token);
+        
         return token;
 
     } catch (error) {

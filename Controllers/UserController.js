@@ -4,70 +4,68 @@ import bcrypt from "bcrypt";
 import generateToken from '../Middleware/authenticateToken.js';
 
 
+
+// Register a new user
 export const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { email, password, username, role } = req.body;
 
-        // Check if the required fields are provided
-        if (!username || !email || !password) {
-            return res.status(400).json({ message: 'All fields are required' }); // Bad Request
-        }
-
-        // Check for existing users with the same email
-        const existingUser = await User.findOne({ email });
+        // Convert email to lowercase before checking
+        const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
         if (existingUser) {
-            return res.status(409).json({ message: 'Email is already registered' }); // Conflict
+            return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Hashing the password before saving the user
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ username, email, password: hashedPassword });
+        // Create new user
+        const newUser = await User.create({
+            email: email.toLowerCase().trim(),
+            password: hashedPassword,
+            username,
+            role,
+        });
 
-        console.log("New User Object:", newUser);
-
-        await newUser.save();
-
-        res.status(201).json({ message: "User registered successfully", user: newUser });
-
+        res.status(201).json({ message: 'User registered successfully' ,newUser});
     } catch (error) {
-        console.error("Error during registration:", error); // More specific logging
+        console.error("Error during registration:", error);
         res.status(500).json({ message: "Registration failed" });
     }
 };
 
+// Login user
 export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check if user exists by email
-        const user = await User.findOne({ email });
+        // Convert email to lowercase and trim spaces before querying
+        const user = await User.findOne({ email: email.toLowerCase().trim() });
         if (!user) {
-            return res.status(404).json({ message: 'User not found' }); // Use 404 for not found
+            console.log("User not found for email:", email); // Debugging
+            return res.status(404).json({ message: 'User not found' });
         }
 
         // Check if password matches
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' }); // 401 for invalid credentials
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // Generate a JWT token
-        const token = await generateToken(user._id); // Await token generation
-        console.log("Generated Token:", token); // Log the generated token
+        const token = await generateToken(user._id);
 
-        // Optionally set token in cookies (uncomment if desired)
+        // Optionally set token in cookies
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: true
+            secure: process.env.NODE_ENV === 'production', // Secure cookie in production
+            sameSite: 'strict'
         });
 
         // Send response with user info and token
         res.status(200).json({ 
             message: 'Login successful', 
-            token, // Include the generated token
+            token,
             user: {
                 _id: user._id,
                 email: user.email,
@@ -76,10 +74,11 @@ export const loginUser = async (req, res) => {
             } 
         });
     } catch (error) {
-        console.error(error); // Better logging of the error
+        console.error("Error during login:", error);
         res.status(500).json({ message: "Login failed" });
     }
 };
+
 
 
 export const logoutUser = (req,res) => {

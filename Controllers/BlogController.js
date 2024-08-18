@@ -51,7 +51,7 @@ export const getBlogs = async (req, res) => {
 
     res.status(201).json({
       message: "All postes retervie successfully",
-      data: getBlogs,
+      blogs: getBlogs,
     });
   } catch (error) {
     console.log(error);
@@ -69,11 +69,11 @@ export const getById = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-const comment = await Comment.find({postId : postId}).populate('user',"username email")
+const comments = await Comment.find({postId : postId}).populate('user',"username email")
 
     res
       .status(202)
-      .json({ message: "Post retrieved successfully", data: post });
+      .send({  post,comments});
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error fetching singel  post" });
@@ -150,7 +150,7 @@ export const relatedPost = async (req, res) => {
 
       const relatedPost =  await Blog.find(relatedQuery)
 
-      res.status(202).json({message: "Related post found ",post: relatedPost})
+      res.status(202).send(relatedPost)
 
   } catch (error) {
     console.log(error);

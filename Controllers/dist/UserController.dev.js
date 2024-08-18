@@ -14,84 +14,73 @@ var _authenticateToken = _interopRequireDefault(require("../Middleware/authentic
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 // import jwt from "jsonwebtoken";
+// Register a new user
 var registerUser = function registerUser(req, res) {
-  var _req$body, username, email, password, existingUser, saltRounds, hashedPassword, newUser;
+  var _req$body, email, password, username, role, existingUser, hashedPassword, newUser;
 
   return regeneratorRuntime.async(function registerUser$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
-          _req$body = req.body, username = _req$body.username, email = _req$body.email, password = _req$body.password; // Check if the required fields are provided
+          _req$body = req.body, email = _req$body.email, password = _req$body.password, username = _req$body.username, role = _req$body.role; // Convert email to lowercase before checking
 
-          if (!(!username || !email || !password)) {
-            _context.next = 4;
+          _context.next = 4;
+          return regeneratorRuntime.awrap(_userSchema["default"].findOne({
+            email: email.toLowerCase().trim()
+          }));
+
+        case 4:
+          existingUser = _context.sent;
+
+          if (!existingUser) {
+            _context.next = 7;
             break;
           }
 
           return _context.abrupt("return", res.status(400).json({
-            message: 'All fields are required'
+            message: 'User already exists'
           }));
 
-        case 4:
-          _context.next = 6;
-          return regeneratorRuntime.awrap(_userSchema["default"].findOne({
-            email: email
-          }));
-
-        case 6:
-          existingUser = _context.sent;
-
-          if (!existingUser) {
-            _context.next = 9;
-            break;
-          }
-
-          return _context.abrupt("return", res.status(409).json({
-            message: 'Email is already registered'
-          }));
+        case 7:
+          _context.next = 9;
+          return regeneratorRuntime.awrap(_bcrypt["default"].hash(password, 10));
 
         case 9:
-          // Hashing the password before saving the user
-          saltRounds = 10;
+          hashedPassword = _context.sent;
           _context.next = 12;
-          return regeneratorRuntime.awrap(_bcrypt["default"].hash(password, saltRounds));
+          return regeneratorRuntime.awrap(_userSchema["default"].create({
+            email: email.toLowerCase().trim(),
+            password: hashedPassword,
+            username: username,
+            role: role
+          }));
 
         case 12:
-          hashedPassword = _context.sent;
-          newUser = new _userSchema["default"]({
-            username: username,
-            email: email,
-            password: hashedPassword
-          });
-          console.log("New User Object:", newUser);
-          _context.next = 17;
-          return regeneratorRuntime.awrap(newUser.save());
-
-        case 17:
+          newUser = _context.sent;
           res.status(201).json({
-            message: "User registered successfully",
-            user: newUser
+            message: 'User registered successfully',
+            newUser: newUser
           });
-          _context.next = 24;
+          _context.next = 20;
           break;
 
-        case 20:
-          _context.prev = 20;
+        case 16:
+          _context.prev = 16;
           _context.t0 = _context["catch"](0);
-          console.error("Error during registration:", _context.t0); // More specific logging
-
+          console.error("Error during registration:", _context.t0);
           res.status(500).json({
             message: "Registration failed"
           });
 
-        case 24:
+        case 20:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 20]]);
-};
+  }, null, null, [[0, 16]]);
+}; // Login user
+
 
 exports.registerUser = registerUser;
 
@@ -103,34 +92,36 @@ var loginUser = function loginUser(req, res) {
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.prev = 0;
-          _req$body2 = req.body, email = _req$body2.email, password = _req$body2.password; // Check if user exists by email
+          _req$body2 = req.body, email = _req$body2.email, password = _req$body2.password; // Convert email to lowercase and trim spaces before querying
 
           _context2.next = 4;
           return regeneratorRuntime.awrap(_userSchema["default"].findOne({
-            email: email
+            email: email.toLowerCase().trim()
           }));
 
         case 4:
           user = _context2.sent;
 
           if (user) {
-            _context2.next = 7;
+            _context2.next = 8;
             break;
           }
+
+          console.log("User not found for email:", email); // Debugging
 
           return _context2.abrupt("return", res.status(404).json({
             message: 'User not found'
           }));
 
-        case 7:
-          _context2.next = 9;
+        case 8:
+          _context2.next = 10;
           return regeneratorRuntime.awrap(_bcrypt["default"].compare(password, user.password));
 
-        case 9:
+        case 10:
           isMatch = _context2.sent;
 
           if (isMatch) {
-            _context2.next = 12;
+            _context2.next = 13;
             break;
           }
 
@@ -138,26 +129,23 @@ var loginUser = function loginUser(req, res) {
             message: 'Invalid credentials'
           }));
 
-        case 12:
-          _context2.next = 14;
+        case 13:
+          _context2.next = 15;
           return regeneratorRuntime.awrap((0, _authenticateToken["default"])(user._id));
 
-        case 14:
+        case 15:
           token = _context2.sent;
-          // Await token generation
-          console.log("Generated Token:", token); // Log the generated token
-          // Optionally set token in cookies (uncomment if desired)
-
+          // Optionally set token in cookies
           res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: true
+            secure: process.env.NODE_ENV === 'production',
+            // Secure cookie in production
+            sameSite: 'strict'
           }); // Send response with user info and token
 
           res.status(200).json({
             message: 'Login successful',
             token: token,
-            // Include the generated token
             user: {
               _id: user._id,
               email: user.email,
@@ -171,8 +159,7 @@ var loginUser = function loginUser(req, res) {
         case 20:
           _context2.prev = 20;
           _context2.t0 = _context2["catch"](0);
-          console.error(_context2.t0); // Better logging of the error
-
+          console.error("Error during login:", _context2.t0);
           res.status(500).json({
             message: "Login failed"
           });
