@@ -32,9 +32,10 @@ app.use(_bodyParser["default"].json({
 app.use(_bodyParser["default"].urlencoded({
   limit: "10mb",
   extended: true
-}));
+})); // CORS Configuration
+
 var allowedOrigins = ["http://localhost:5173", // Local development
-"https://glistening-dragon-43dc39.netlify.app/" // Production domain for frontend
+"https://glistening-dragon-43dc39.netlify.app" // Production domain for frontend
 ];
 app.use((0, _cors["default"])({
   origin: function origin(_origin, callback) {
@@ -47,9 +48,10 @@ app.use((0, _cors["default"])({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
-app.use(_express["default"].json());
-(0, _config["default"])();
-var PORT = process.env.PORT || 5000;
+app.use(_express["default"].json()); // Database Connection
+
+(0, _config["default"])(); // API Routes
+
 app.get("/", function (req, res) {
   res.status(200).send("app is running");
 });
@@ -69,7 +71,9 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(function (req, res, next) {
   res.status(404).send("Route not found");
-});
+}); // Start the server
+
+var PORT = process.env.PORT || 5000;
 app.listen(PORT, function () {
   console.log("app is running on port ".concat(PORT));
 });

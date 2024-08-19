@@ -17,9 +17,10 @@ app.use(cookieParser());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+// CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173", // Local development
-  "https://glistening-dragon-43dc39.netlify.app/", // Production domain for frontend
+  "https://glistening-dragon-43dc39.netlify.app", // Production domain for frontend
 ];
 
 app.use(
@@ -38,10 +39,10 @@ app.use(
 
 app.use(express.json());
 
+// Database Connection
 connectDB();
 
-const PORT = process.env.PORT || 5000;
-
+// API Routes
 app.get("/", (req, res) => {
   res.status(200).send("app is running");
 });
@@ -65,6 +66,8 @@ app.use((req, res, next) => {
   res.status(404).send("Route not found");
 });
 
+// Start the server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`app is running on port ${PORT}`);
 });
