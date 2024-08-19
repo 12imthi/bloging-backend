@@ -124,25 +124,32 @@ export const deleteUsers = async(req,res) => {
     }
 }
 
-export const updateUserByRole = async(req,res) => {
+export const updateUserByRole = async (req, res) => {
     try {
+        const { id } = req.params;
+        const { role } = req.body;
 
-        const {id} = req.params;
-        const {role} = req.body;
-
-
-        const user = await User.findByIdAndUpdate(id, {role}, {new:true})
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found." }); 
+        // Ensure role is provided
+        if (!role) {
+            return res.status(400).json({ message: "Role is required." });
         }
 
-        res.status(200).json({message: 'user role updated successfully',user})
+        // Find and update the user
+        const user = await User.findByIdAndUpdate(id, { role }, { new: true });
 
+        // Check if the user was found
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
 
-        
+        // Respond with success message
+        res.status(200).send( user );
+
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "Erorr from updateUserByRole"})
+        // Log error details
+        console.error("Error from updateUserByRole:", error);
+        // Respond with error message
+        res.status(500).json({ message: "Error from updateUserByRole" });
     }
-}
+};
+

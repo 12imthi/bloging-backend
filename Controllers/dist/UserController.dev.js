@@ -280,19 +280,30 @@ var updateUserByRole = function updateUserByRole(req, res) {
         case 0:
           _context5.prev = 0;
           id = req.params.id;
-          role = req.body.role;
-          _context5.next = 5;
+          role = req.body.role; // Ensure role is provided
+
+          if (role) {
+            _context5.next = 5;
+            break;
+          }
+
+          return _context5.abrupt("return", res.status(400).json({
+            message: "Role is required."
+          }));
+
+        case 5:
+          _context5.next = 7;
           return regeneratorRuntime.awrap(_userSchema["default"].findByIdAndUpdate(id, {
             role: role
           }, {
             "new": true
           }));
 
-        case 5:
+        case 7:
           user = _context5.sent;
 
           if (user) {
-            _context5.next = 8;
+            _context5.next = 10;
             break;
           }
 
@@ -300,28 +311,28 @@ var updateUserByRole = function updateUserByRole(req, res) {
             message: "User not found."
           }));
 
-        case 8:
-          res.status(200).json({
-            message: 'user role updated successfully',
-            user: user
-          });
-          _context5.next = 15;
+        case 10:
+          // Respond with success message
+          res.status(200).send(user);
+          _context5.next = 17;
           break;
 
-        case 11:
-          _context5.prev = 11;
+        case 13:
+          _context5.prev = 13;
           _context5.t0 = _context5["catch"](0);
-          console.log(_context5.t0);
+          // Log error details
+          console.error("Error from updateUserByRole:", _context5.t0); // Respond with error message
+
           res.status(500).json({
-            message: "Erorr from updateUserByRole"
+            message: "Error from updateUserByRole"
           });
 
-        case 15:
+        case 17:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 11]]);
+  }, null, null, [[0, 13]]);
 };
 
 exports.updateUserByRole = updateUserByRole;
