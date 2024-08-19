@@ -2,7 +2,7 @@
 
 var _express = _interopRequireDefault(require("express"));
 
-var _cors2 = _interopRequireDefault(require("cors"));
+var _cors = _interopRequireDefault(require("cors"));
 
 var _dotenv = _interopRequireDefault(require("dotenv"));
 
@@ -18,11 +18,7 @@ var _cookieParser = _interopRequireDefault(require("cookie-parser"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
-var _cors;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 _dotenv["default"].config();
 
@@ -35,9 +31,12 @@ app.use(_bodyParser["default"].urlencoded({
   limit: '10mb',
   extended: true
 }));
-app.use((0, _cors2["default"])((_cors = {
-  origin: "http://localhost:5173"
-}, _defineProperty(_cors, "origin", "https://bloging-backend-d8fr.onrender.com"), _defineProperty(_cors, "methods", ["GET", "POST", "PUT", 'PATCH', "DELETE"]), _defineProperty(_cors, "credentials", true), _cors)));
+app.use((0, _cors["default"])({
+  // origin: "http://localhost:5173",
+  origin: "https://bloging-backend-d8fr.onrender.com",
+  methods: ["GET", "POST", "PUT", 'PATCH', "DELETE"],
+  credentials: true
+}));
 app.use(_express["default"].json());
 (0, _config["default"])();
 var PORT = process.env.PORT || 5000;
