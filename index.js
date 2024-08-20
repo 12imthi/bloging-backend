@@ -22,7 +22,7 @@ app.use(
   cors({
    origin: [
     "http://localhost:5173",
-    "https://bloging-backend-d8fr.onrender.com"
+    "https://glistening-dragon-43dc39.netlify.app"
    ],
     methods: ["GET", "POST", "PUT",'PATCH', "DELETE"],
     credentials: true,
