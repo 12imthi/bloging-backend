@@ -59,7 +59,7 @@ export const loginUser = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // Secure cookie in production
-            sameSite: 'strict'
+            sameSite: 'None'
         });
 
         // Send response with user info and token
