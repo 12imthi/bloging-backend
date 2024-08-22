@@ -1,5 +1,9 @@
 # Blog Backend
 
+## Postman
+https://documenter.getpostman.com/view/31729064/2sAXjDdv1Z
+
+
 ## Overview
 
 This is the backend API for a blog application, developed using Node.js, Express, and MongoDB. The API provides endpoints to manage blog posts, including creating, reading, updating, and deleting posts. 
