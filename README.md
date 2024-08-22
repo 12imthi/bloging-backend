@@ -1,6 +1,6 @@
 # Blog Backend
 
-## Postman endpoints
+## Postman URL link
 [https://documenter.getpostman.com/view/31729064/2sAXjDdv1Z](https://documenter.getpostman.com/view/31729064/2sAXjDdv1Z)
 
 
