@@ -86,6 +86,8 @@ export const updatePostById = async (req, res) => {
       { new: true }
     );
 
+
+    // console.log(updatedPost);
     if (!updatedPost) {
       return res.status(404).json({ message: "post not found" });
     }
@@ -150,5 +152,27 @@ export const relatedPost = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error RelatedPost  post" });
+  }
+};
+
+
+export const getUserPosts = async (req, res) => {
+  try {
+    // Assuming `req.userId` is set in the verifyToken middleware
+    const userId = req.userId; // Fetch the logged-in user's ID
+
+    const userPosts = await Blog.find({ author: userId }).populate('author', 'email').sort({ createdAt: -1 });
+
+    if (!userPosts.length) {
+      return res.status(404).json({ message: "No posts found for this user" });
+    }
+
+    res.status(200).json({
+      message: "User posts retrieved successfully",
+      posts: userPosts,
+    });
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    res.status(500).json({ message: "Error fetching user posts" });
   }
 };
