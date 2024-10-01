@@ -26,7 +26,7 @@ var userSchema = new _mongoose["default"].Schema({
   },
   role: {
     type: String,
-    "default": 'User'
+    "default": 'user'
   },
   createdAt: {
     type: Date,

@@ -14,7 +14,7 @@ const verifyToken = (req,res,next) => {
 
         // const token = req.cookies.token;
 
-        console.log( 'token : ', req.cookies.token);
+        // console.log( 'token : ', req.cookies.token);
 
         const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 // console.log(token);

@@ -18,11 +18,11 @@ var router = _express["default"].Router(); // Routes for both users and admins
 
 router.post("/create-post", _verifyToken["default"], _BlogController.createBlog);
 router.patch('/update-post/:id', _verifyToken["default"], _BlogController.updatePostById);
-router["delete"]('/delete-post/:id', _verifyToken["default"], _BlogController.deletePost); // Public routes
+router["delete"]('/delete-post/:id', _verifyToken["default"], _BlogController.deletePost);
+router.get('/user-posts', _verifyToken["default"], _BlogController.getUserPosts); // Public routes
 
 router.get('/', _BlogController.getBlogs);
 router.get('/:id', _BlogController.getById);
 router.get('/related/:id', _BlogController.relatedPost);
-router.get('/user-posts', _verifyToken["default"], _BlogController.getUserPosts);
 var _default = router;
 exports["default"] = _default;

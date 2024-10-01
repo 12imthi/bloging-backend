@@ -140,16 +140,26 @@ var getById = function getById(req, res) {
       switch (_context3.prev = _context3.next) {
         case 0:
           _context3.prev = 0;
-          // console.log(req.params.id);
-          postId = req.params.id;
-          _context3.next = 4;
-          return regeneratorRuntime.awrap(_blogSchema["default"].findById(postId));
+          postId = req.params.id; // Check if postId is a valid ObjectId
+
+          if (_mongoose["default"].Types.ObjectId.isValid(postId)) {
+            _context3.next = 4;
+            break;
+          }
+
+          return _context3.abrupt("return", res.status(400).json({
+            message: "Invalid Post ID"
+          }));
 
         case 4:
+          _context3.next = 6;
+          return regeneratorRuntime.awrap(_blogSchema["default"].findById(postId));
+
+        case 6:
           post = _context3.sent;
 
           if (post) {
-            _context3.next = 7;
+            _context3.next = 9;
             break;
           }
 
@@ -157,35 +167,35 @@ var getById = function getById(req, res) {
             message: "Post not found"
           }));
 
-        case 7:
-          _context3.next = 9;
+        case 9:
+          _context3.next = 11;
           return regeneratorRuntime.awrap(_commentSchema["default"].find({
             postId: postId
-          }).populate('user', "username email"));
+          }).populate('user', 'username email'));
 
-        case 9:
+        case 11:
           comments = _context3.sent;
-          res.status(202).send({
+          res.status(202).json({
             post: post,
             comments: comments
           });
-          _context3.next = 17;
+          _context3.next = 19;
           break;
 
-        case 13:
-          _context3.prev = 13;
+        case 15:
+          _context3.prev = 15;
           _context3.t0 = _context3["catch"](0);
           console.log(_context3.t0);
           res.status(500).json({
-            message: "Error fetching singel  post"
+            message: "Error fetching single post"
           });
 
-        case 17:
+        case 19:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[0, 13]]);
+  }, null, null, [[0, 15]]);
 };
 
 exports.getById = getById;
@@ -379,6 +389,7 @@ var getUserPosts = function getUserPosts(req, res) {
           _context7.prev = 0;
           // Assuming `req.userId` is set in the verifyToken middleware
           userId = req.userId; // Fetch the logged-in user's ID
+          // console.log("getUserPostsID : ",userId);
 
           _context7.next = 4;
           return regeneratorRuntime.awrap(_blogSchema["default"].find({
@@ -389,9 +400,10 @@ var getUserPosts = function getUserPosts(req, res) {
 
         case 4:
           userPosts = _context7.sent;
+          console.log('userpost : ', userPosts);
 
           if (userPosts.length) {
-            _context7.next = 7;
+            _context7.next = 8;
             break;
           }
 
@@ -399,28 +411,28 @@ var getUserPosts = function getUserPosts(req, res) {
             message: "No posts found for this user"
           }));
 
-        case 7:
+        case 8:
           res.status(200).json({
             message: "User posts retrieved successfully",
             posts: userPosts
           });
-          _context7.next = 14;
+          _context7.next = 15;
           break;
 
-        case 10:
-          _context7.prev = 10;
+        case 11:
+          _context7.prev = 11;
           _context7.t0 = _context7["catch"](0);
           console.error("Error fetching user posts:", _context7.t0);
           res.status(500).json({
             message: "Error fetching user posts"
           });
 
-        case 14:
+        case 15:
         case "end":
           return _context7.stop();
       }
     }
-  }, null, null, [[0, 10]]);
+  }, null, null, [[0, 11]]);
 };
 
 exports.getUserPosts = getUserPosts;

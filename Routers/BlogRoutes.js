@@ -16,11 +16,12 @@ const router = express.Router();
 router.post("/create-post",verifyToken, createBlog);
 router.patch('/update-post/:id', verifyToken, updatePostById);
 router.delete('/delete-post/:id', verifyToken, deletePost);
+router.get('/user-posts', verifyToken, getUserPosts);
 
 // Public routes
 router.get('/', getBlogs);
 router.get('/:id', getById);
 router.get('/related/:id', relatedPost);
-router.get('/user-posts', verifyToken, getUserPosts);
+
 
 export default router;

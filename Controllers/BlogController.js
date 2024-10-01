@@ -56,22 +56,26 @@ export const getBlogs = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    // console.log(req.params.id);
-
     const postId = req.params.id;
+
+    // Check if postId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Invalid Post ID" });
+    }
+
+    // Find the blog post by its ID
     const post = await Blog.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-const comments = await Comment.find({postId : postId}).populate('user',"username email")
+    // Find the comments associated with the post
+    const comments = await Comment.find({ postId }).populate('user', 'username email');
 
-    res
-      .status(202)
-      .send({  post,comments});
+    res.status(202).json({ post, comments });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching singel  post" });
+    res.status(500).json({ message: "Error fetching single post" });
   }
 };
 
@@ -161,7 +165,13 @@ export const getUserPosts = async (req, res) => {
     // Assuming `req.userId` is set in the verifyToken middleware
     const userId = req.userId; // Fetch the logged-in user's ID
 
+
+    // console.log("getUserPostsID : ",userId);
+    
+
     const userPosts = await Blog.find({ author: userId }).populate('author', 'email').sort({ createdAt: -1 });
+
+    console.log('userpost : ',  userPosts);
 
     if (!userPosts.length) {
       return res.status(404).json({ message: "No posts found for this user" });
